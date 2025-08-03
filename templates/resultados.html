@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados da Busca</title>
+</head>
+<body>
+    <h1>Voos encontrados</h1>
+    {% if voos %}
+        <ul>
+        {% for voo in voos %}
+            <li>{{ voo.cityFrom }} → {{ voo.cityTo }} | Preço: €{{ voo.price }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum voo encontrado para os critérios informados.</p>
+    {% endif %}
+    <a href="/">Nova busca</a>
+</body>
+</html>
