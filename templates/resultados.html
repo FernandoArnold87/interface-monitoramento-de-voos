@@ -1,19 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Resultados da Busca</title>
+  <meta charset="UTF-8" />
+  <title>Resultados de Voos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+      background: #eef2f7;
+      color: #333;
+    }
+    .header {
+      background: #283c86;
+      color: white;
+      text-align: center;
+      padding: 30px;
+      font-size: 1.8em;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #5563DE;
+      color: white;
+    }
+    tr:hover {
+      background: #f1f5fb;
+    }
+    .alert {
+      color: #e74c3c;
+      font-weight: bold;
+      text-align: center;
+    }
+    .back {
+      display: block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #283c86;
+      font-weight: bold;
+    }
+    .back:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <h1>Voos encontrados</h1>
-    {% if voos %}
-        <ul>
-        {% for voo in voos %}
-            <li>{{ voo.cityFrom }} → {{ voo.cityTo }} | Preço: €{{ voo.price }}</li>
-        {% endfor %}
-        </ul>
+  <div class="header">✈️ Resultados da Busca</div>
+  <div class="container">
+    {% if erro %}
+      <p class="alert">{{ erro }}</p>
+    {% elif not voos %}
+      <p class="alert">Nenhum voo encontrado.</p>
     {% else %}
-        <p>Nenhum voo encontrado para os critérios informados.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Origem → Destino</th>
+            <th>Preço (€)</th>
+            <th>Partida</th>
+            <th>Chegada</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for voo in voos %}
+          <tr>
+            <td>{{ voo.cityFrom }} → {{ voo.cityTo }}</td>
+            <td>{{ voo.price }}</td>
+            <td>{{ voo.dTimeUTC | datetimeformat }}</td>
+            <td>{{ voo.aTimeUTC | datetimeformat }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% endif %}
-    <a href="/">Nova busca</a>
+    <a href="/" class="back">🔙 Nova busca</a>
+  </div>
 </body>
 </html>
