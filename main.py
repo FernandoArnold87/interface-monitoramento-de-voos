@@ -2,18 +2,16 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import requests
+import httpx
 
 app = FastAPI()
 
-# Montar diretório de arquivos estáticos
+# Monta diretório estático e templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Diretório de templates
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-async def formulario(request: Request):
+async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/precos", response_class=HTMLResponse)
@@ -24,61 +22,60 @@ async def buscar_precos(
     data_ida: str = Form(...),
     data_volta: str = Form(...)
 ):
-    url = "https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip"
-
-    querystring = {
-        "source": f"City%3A{origem.upper()}",
-        "destination": f"City%3A{destino.upper()}",
-        "currency": "usd",
-        "locale": "en",
-        "adults": "1",
-        "children": "0",
-        "infants": "0",
-        "cabinClass": "ECONOMY",
-        "sortBy": "QUALITY",
-        "sortOrder": "ASCENDING",
-        "applyMixedClasses": "true",
-        "allowReturnFromDifferentCity": "true",
-        "allowChangeInboundDestination": "true",
-        "allowChangeInboundSource": "true",
-        "allowDifferentStationConnection": "true",
-        "enableSelfTransfer": "true",
-        "allowOvernightStopover": "true",
-        "enableTrueHiddenCity": "true",
-        "enableThrowAwayTicketing": "true",
-        "outbound": data_ida,
-        "inbound": data_volta,
-        "transportTypes": "FLIGHT",
-        "limit": "20"
-    }
+    resultados = []
 
     headers = {
-        "X-RapidAPI-Key": "91f14f42abmsh4284770cfc06d62p116ec3jsn2d9b0dc985b7",
-        "X-RapidAPI-Host": "kiwi-com-cheap-flights.p.rapidapi.com"
+        "X-RapidAPI-Key": "91f14f42abmsh4284770cfc06d62p116ec3jsn2d9b0dc985b7"
     }
 
     try:
-        response = requests.get(url, headers=headers, params=querystring)
-        data = response.json()
+        async with httpx.AsyncClient() as client:
+            # API 1
+            url1 = "https://flight-data28.p.rapidapi.com/flights/search/summary"
+            params1 = {
+                "fly_from": origem.upper(),
+                "fly_to": destino.upper(),
+                "date_from": data_ida,
+                "date_to": data_volta,
+                "curr": "EUR",
+                "limit": 10
+            }
+            headers1 = headers.copy()
+            headers1["X-RapidAPI-Host"] = "flight-data28.p.rapidapi.com"
+            res1 = await client.get(url1, params=params1, headers=headers1)
+            if res1.status_code == 200:
+                dados1 = res1.json()
+                resultados.append({"fonte": "Flight-Data28", "dados": dados1.get("data", [])})
+            else:
+                resultados.append({"fonte": "Flight-Data28", "erro": f"Código {res1.status_code}"})
 
-        if response.status_code != 200 or "items" not in data:
-            return templates.TemplateResponse("resultados.html", {
-                "request": request,
-                "erro": f"Erro ao buscar dados. Código {response.status_code}",
-                "voos": []
-            })
-
-        voos = data["items"]
-
-        return templates.TemplateResponse("resultados.html", {
-            "request": request,
-            "voos": voos,
-            "erro": None
-        })
+            # API 2
+            url2 = "https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip"
+            params2 = {
+                "source": f"City:{origem}",
+                "destination": f"City:{destino}",
+                "dateFrom": data_ida,
+                "dateTo": data_volta,
+                "currency": "eur",
+                "limit": 10
+            }
+            headers2 = headers.copy()
+            headers2["X-RapidAPI-Host"] = "kiwi-com-cheap-flights.p.rapidapi.com"
+            res2 = await client.get(url2, params=params2, headers=headers2)
+            if res2.status_code == 200:
+                dados2 = res2.json()
+                resultados.append({"fonte": "Kiwi", "dados": dados2})
+            else:
+                resultados.append({"fonte": "Kiwi", "erro": f"Código {res2.status_code}"})
 
     except Exception as e:
         return templates.TemplateResponse("resultados.html", {
             "request": request,
-            "erro": f"Erro inesperado: {str(e)}",
-            "voos": []
+            "erro": str(e),
+            "resultados": []
         })
+
+    return templates.TemplateResponse("resultados.html", {
+        "request": request,
+        "resultados": resultados
+    })

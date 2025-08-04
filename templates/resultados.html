@@ -1,93 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Resultados de Voos</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-      background: #eef2f7;
-      color: #333;
-    }
-    .header {
-      background: #283c86;
-      color: white;
-      text-align: center;
-      padding: 30px;
-      font-size: 1.8em;
-    }
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background: #5563DE;
-      color: white;
-    }
-    tr:hover {
-      background: #f1f5fb;
-    }
-    .alert {
-      color: #e74c3c;
-      font-weight: bold;
-      text-align: center;
-    }
-    .back {
-      display: block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #283c86;
-      font-weight: bold;
-    }
-    .back:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Resultados da Busca de Voos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #f4f6f8;
+        }
+        .voo {
+            background-color: #fff;
+            margin: 15px auto;
+            padding: 20px;
+            width: 80%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 30px;
+        }
+        a {
+            text-decoration: none;
+            color: #337ab7;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">✈️ Resultados da Busca</div>
-  <div class="container">
-    {% if erro %}
-      <p class="alert">{{ erro }}</p>
-    {% elif not voos %}
-      <p class="alert">Nenhum voo encontrado.</p>
+    <img class="logo" src="/static/logo.jpg" alt="Logo">
+    <h1>Resultados da Busca de Voos</h1>
+    {% if voos %}
+        {% for voo in voos %}
+            <div class="voo">
+                <p><strong>Origem:</strong> {{ voo.origem }}</p>
+                <p><strong>Destino:</strong> {{ voo.destino }}</p>
+                <p><strong>Partida:</strong> {{ voo.data_partida }}</p>
+                <p><strong>Retorno:</strong> {{ voo.data_retorno }}</p>
+                <p><strong>Preço:</strong> {{ voo.preco }}</p>
+                <p><a href="{{ voo.link }}" target="_blank">Ver detalhes</a></p>
+            </div>
+        {% endfor %}
     {% else %}
-      <table>
-        <thead>
-          <tr>
-            <th>Origem → Destino</th>
-            <th>Preço (€)</th>
-            <th>Partida</th>
-            <th>Chegada</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for voo in voos %}
-          <tr>
-            <td>{{ voo.cityFrom }} → {{ voo.cityTo }}</td>
-            <td>{{ voo.price }}</td>
-            <td>{{ voo.dTimeUTC | datetimeformat }}</td>
-            <td>{{ voo.aTimeUTC | datetimeformat }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <p>Nenhum voo encontrado para os critérios informados.</p>
     {% endif %}
-    <a href="/" class="back">🔙 Nova busca</a>
-  </div>
 </body>
 </html>

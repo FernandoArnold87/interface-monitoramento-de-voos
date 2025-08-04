@@ -1,80 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Busca de Voos</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
-      color: #333;
-    }
-    .header {
-      background: #283c86;
-      color: white;
-      padding: 30px;
-      text-align: center;
-      font-size: 2em;
-      letter-spacing: 1px;
-    }
-    .container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-      padding: 25px;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input[type="text"], input[type="date"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 1em;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #283c86;
-      color: white;
-      border: none;
-      font-size: 1.1em;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #1b2a72;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 0.9em;
-      color: #xee;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Monitoramento de Voos - BERLIN & CO.</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+            background-color: #f4f6f8;
+        }
+        img {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        form {
+            background-color: #fff;
+            padding: 25px;
+            margin: 0 auto;
+            width: 400px;
+            box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            text-align: left;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-  <div class="header">✈️ Busca de Voos</div>
-  <div class="container">
+
+    <img src="/static/logo.jpg" alt="BERLIN & CO. Logo">
+
+    <h1>Monitoramento de Voos</h1>
+
     <form action="/precos" method="post">
-      <label for="origem">Origem (código IATA)</label>
-      <input type="text" name="origem" placeholder="Ex: FRA" required />
-      <label for="destino">Destino (código IATA)</label>
-      <input type="text" name="destino" placeholder="Ex: GRU" required />
-      <label for="data_ida">Data de Ida</label>
-      <input type="date" name="data_ida" required />
-      <button type="submit">Buscar Passagens</button>
+        <label for="origem">Origem:</label>
+        <input type="text" id="origem" name="origem" required>
+
+        <label for="destino">Destino:</label>
+        <input type="text" id="destino" name="destino" required>
+
+        <label for="data_ida">Data de Ida:</label>
+        <input type="date" id="data_ida" name="data_ida" required>
+
+        <label for="data_volta">Data de Volta:</label>
+        <input type="date" id="data_volta" name="data_volta" required>
+
+        <button type="submit">Buscar Passagens</button>
     </form>
-  </div>
-  <div class="footer">Feito com ❤️ – FastAPI &amp; Kiwi API</div>
+
 </body>
 </html>
