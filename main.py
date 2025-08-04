@@ -1,32 +1,37 @@
-from datetime import datetime
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-import requests
-
-app = FastAPI()
-templates = Jinja2Templates(directory="templates")
-
-@app.get("/", response_class=HTMLResponse)
-def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
 @app.post("/precos", response_class=HTMLResponse)
 def precos(request: Request, origem: str = Form(...), destino: str = Form(...), data_ida: str = Form(...)):
+    url = f"https://api.skypicker.com/flights?flyFrom={origem}&to={destino}&dateFrom={data_ida}&dateTo={data_ida}&partner=picky"
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return templates.TemplateResponse("resultados.html", {
+            "request": request,
+            "voos": [],
+            "erro": f"Erro ao buscar dados. Código {response.status_code}"
+        })
+
     try:
-        # Converte data para formato dd/mm/yyyy
-        data_formatada = datetime.strptime(data_ida, "%Y-%m-%d").strftime("%d/%m/%Y")
-        url = f"https://api.skypicker.com/flights?flyFrom={origem}&to={destino}&dateFrom={data_formatada}&dateTo={data_formatada}&partner=picky"
-        resposta = requests.get(url)
+        dados = response.json()
+        voos = dados.get("data", [])
+    except ValueError:
+        return templates.TemplateResponse("resultados.html", {
+            "request": request,
+            "voos": [],
+            "erro": "Resposta inválida da API."
+        })
 
-        if resposta.status_code == 200:
-            dados = resposta.json()
-            voos = dados.get("data", [])
-        else:
-            voos = []
+    return templates.TemplateResponse("resultados.html", {
+        "request": request,
+        "voos": voos,
+        "erro": None
+    })
+from datetime import datetime
 
-    except Exception as e:
-        voos = []
-        print(f"Erro ao buscar voos: {e}")
-
-    return templates.TemplateResponse("resultados.html", {"request": request, "voos": voos})
+def datetimeformat(value):
+    try:
+        return datetime.utcfromtimestamp(int(value)).strftime('%d/%m/%Y %H:%M')
+    except:
+        return "-"
+        
+templates.env.filters["datetimeformat"] = datetimeformat

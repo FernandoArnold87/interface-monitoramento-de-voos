@@ -1,2 +1,35 @@
 index.html
 resultados.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resultados de Voos</title>
+</head>
+<body>
+    <h1>Resultados da Busca</h1>
+    {% if voos %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Companhia</th>
+                    <th>Preço (€)</th>
+                    <th>Partida</th>
+                    <th>Chegada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for voo in voos %}
+                    <tr>
+                        <td>{{ voo.get('airlines', ['-'])[0] }}</td>
+                        <td>{{ voo.get('price', '-') }}</td>
+                        <td>{{ voo.get('dTimeUTC', '-') | datetimeformat }}</td>
+                        <td>{{ voo.get('aTimeUTC', '-') | datetimeformat }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nenhum voo encontrado.</p>
+    {% endif %}
+</body>
+</html>
