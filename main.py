@@ -7,16 +7,26 @@ from datetime import datetime
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+
 @app.post("/precos", response_class=HTMLResponse)
-def precos(request: Request, origem: str = Form(...), destino: str = Form(...), data_ida: str = Form(...)):
+def precos(
+    request: Request,
+    origem: str = Form(...),
+    destino: str = Form(...),
+    data_ida: str = Form(...),
+    data_volta: str = Form(None)  # opcional para futuro uso
+):
+    # URL base da API da Kiwi (Skypicker)
     url = (
         f"https://api.skypicker.com/flights?"
-        f"flyFrom={origem}&to={destino}&dateFrom={data_ida}&dateTo={data_ida}"
-        f"&partner=picky&curr=EUR&limit=5&sort=price"
+        f"flyFrom={origem}&to={destino}"
+        f"&dateFrom={data_ida}&dateTo={data_ida}"
+        f"&partner=picky&curr=EUR&limit=10&sort=price"
     )
 
     response = requests.get(url)
@@ -44,7 +54,8 @@ def precos(request: Request, origem: str = Form(...), destino: str = Form(...), 
         "erro": None
     })
 
-# Filtro para formatar timestamps da API
+
+# Filtro para formatar timestamps Unix em datas legíveis
 def datetimeformat(value):
     try:
         return datetime.utcfromtimestamp(int(value)).strftime('%d/%m/%Y %H:%M')
@@ -52,4 +63,5 @@ def datetimeformat(value):
         return "-"
 
 templates.env.filters["datetimeformat"] = datetimeformat
+
 
