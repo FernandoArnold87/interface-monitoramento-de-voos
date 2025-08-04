@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import requests
@@ -12,7 +12,12 @@ def index(request: Request):
 
 @app.post("/precos", response_class=HTMLResponse)
 def precos(request: Request, origem: str = Form(...), destino: str = Form(...), data_ida: str = Form(...)):
-    url = f"https://api.skypicker.com/flights?flyFrom={origem}&to={destino}&dateFrom={data_ida}&dateTo={data_ida}&partner=picky"
-    response = requests.get(url).json()
-    voos = response.get("data", [])
+    url = (
+        "https://api.skypicker.com/flights"
+        f"?flyFrom={origem}&to={destino}&dateFrom={data_ida}&dateTo={data_ida}"
+        "&partner=picky&limit=5&sort=price"
+    )
+    resposta = requests.get(url)
+    dados = resposta.json()
+    voos = dados.get("data", [])
     return templates.TemplateResponse("resultados.html", {"request": request, "voos": voos})
