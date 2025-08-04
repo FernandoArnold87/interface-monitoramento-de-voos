@@ -3,59 +3,72 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import requests
-from datetime import datetime
 
 app = FastAPI()
 
+# Montar diretório de arquivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Diretório de templates
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-async def form(request: Request):
+async def formulario(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.post("/precos", response_class=HTMLResponse)
-async def precos(
+async def buscar_precos(
     request: Request,
     origem: str = Form(...),
     destino: str = Form(...),
-    data_ida: str = Form(...)
+    data_ida: str = Form(...),
+    data_volta: str = Form(...)
 ):
+    url = "https://kiwi-com-cheap-flights.p.rapidapi.com/round-trip"
+
+    querystring = {
+        "source": f"City%3A{origem.upper()}",
+        "destination": f"City%3A{destino.upper()}",
+        "currency": "usd",
+        "locale": "en",
+        "adults": "1",
+        "children": "0",
+        "infants": "0",
+        "cabinClass": "ECONOMY",
+        "sortBy": "QUALITY",
+        "sortOrder": "ASCENDING",
+        "applyMixedClasses": "true",
+        "allowReturnFromDifferentCity": "true",
+        "allowChangeInboundDestination": "true",
+        "allowChangeInboundSource": "true",
+        "allowDifferentStationConnection": "true",
+        "enableSelfTransfer": "true",
+        "allowOvernightStopover": "true",
+        "enableTrueHiddenCity": "true",
+        "enableThrowAwayTicketing": "true",
+        "outbound": data_ida,
+        "inbound": data_volta,
+        "transportTypes": "FLIGHT",
+        "limit": "20"
+    }
+
+    headers = {
+        "X-RapidAPI-Key": "91f14f42abmsh4284770cfc06d62p116ec3jsn2d9b0dc985b7",
+        "X-RapidAPI-Host": "kiwi-com-cheap-flights.p.rapidapi.com"
+    }
+
     try:
-        # Define URLs das APIs
-        urls = [
-            f"https://api.skypicker.com/flights?flyFrom={origem}&to={destino}&dateFrom={data_ida}&dateTo={data_ida}&partner=picky&curr=EUR&limit=10&sort=price",
-            f"https://api.tequila.kiwi.com/v2/search?fly_from={origem}&fly_to={destino}&date_from={data_ida}&date_to={data_ida}&curr=EUR&limit=10&sort=price"
-        ]
+        response = requests.get(url, headers=headers, params=querystring)
+        data = response.json()
 
-        headers_kiwi = {
-            "apikey": "tequila"  # Para fins educacionais, sem chave oficial
-        }
-
-        voos = []
-
-        # Tenta cada API
-        for url in urls:
-            try:
-                if "kiwi.com" in url:
-                    response = requests.get(url, headers=headers_kiwi)
-                else:
-                    response = requests.get(url)
-
-                if response.status_code == 200:
-                    data = response.json()
-                    resultado = data.get("data", [])
-                    if resultado:
-                        voos.extend(resultado)
-            except Exception:
-                continue
-
-        if not voos:
+        if response.status_code != 200 or "items" not in data:
             return templates.TemplateResponse("resultados.html", {
                 "request": request,
-                "voos": [],
-                "erro": "Nenhum resultado encontrado ou erro nas fontes."
+                "erro": f"Erro ao buscar dados. Código {response.status_code}",
+                "voos": []
             })
+
+        voos = data["items"]
 
         return templates.TemplateResponse("resultados.html", {
             "request": request,
@@ -66,15 +79,6 @@ async def precos(
     except Exception as e:
         return templates.TemplateResponse("resultados.html", {
             "request": request,
-            "voos": [],
-            "erro": f"Erro inesperado: {str(e)}"
+            "erro": f"Erro inesperado: {str(e)}",
+            "voos": []
         })
-
-# Utilitário para formatar datas
-def datetimeformat(value):
-    try:
-        return datetime.utcfromtimestamp(int(value)).strftime('%d/%m/%Y %H:%M')
-    except:
-        return value
-
-templates.env.filters["datetimeformat"] = datetimeformat
