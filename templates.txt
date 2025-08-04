@@ -5,6 +5,10 @@
     <title>Monitoramento de Voos</title>
     <style>
         body {
+<div style="text-align: center; margin: 20px;">
+  <img src="/static/logo.png" alt="Logo BERLIN & CO." style="max-height: 120px;">
+</div>
+
             font-family: Arial, sans-serif;
             background-color: #f5f6fa;
             margin: 0;
