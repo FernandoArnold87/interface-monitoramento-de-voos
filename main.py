@@ -24,25 +24,19 @@ async def precos(
     data_retorno: str = Form(...)
 ):
     try:
-        # Converte de 'YYYY-MM-DD' para 'DD/MM/YYYY'
-        data_partida_formatada = datetime.strptime(data_partida, "%Y-%m-%d").strftime("%d/%m/%Y")
-        data_retorno_formatada = datetime.strptime(data_retorno, "%Y-%m-%d").strftime("%d/%m/%Y")
-
-        voos_kiwi = await buscar_voos_kiwi(origem, destino, data_partida_formatada, data_retorno_formatada)
-        voos_skyscanner = await buscar_voos_skyscanner(origem, destino, data_partida_formatada, data_retorno_formatada)
-
-        voos = voos_kiwi + voos_skyscanner
-
-        return templates.TemplateResponse("resultados.html", {
-            "request": request,
-            "voos": voos
-        })
-
+        # Converter datas do formato do HTML para o formato DD/MM/YYYY
+        data_partida_convertida = datetime.strptime(data_partida, "%Y-%m-%d").strftime("%d/%m/%Y")
+        data_retorno_convertida = datetime.strptime(data_retorno, "%Y-%m-%d").strftime("%d/%m/%Y")
     except ValueError:
-        erro = "Formato de data inválido. Use DD/MM/AAAA."
         return templates.TemplateResponse("resultados.html", {
             "request": request,
             "voos": [],
-            "erro": erro
+            "erro": "Formato de data inválido. Use DD/MM/AAAA."
         })
+
+    voos_kiwi = await buscar_voos_kiwi(origem, destino, data_partida_convertida, data_retorno_convertida)
+    voos_skyscanner = await buscar_voos_skyscanner(origem, destino, data_partida_convertida, data_retorno_convertida)
+
+    voos = voos_kiwi + voos_skyscanner
+    return templates.TemplateResponse("resultados.html", {"request": request, "voos": voos})
 
