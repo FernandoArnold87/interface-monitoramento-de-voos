@@ -53,6 +53,10 @@
         <h1>Resultados da Busca de Voos</h1>
     </div>
 
+    {% if erro %}
+        <p style="color:red"><strong>Erro:</strong> {{ erro }}</p>
+    {% endif %}
+
     {% if voos %}
         {% for voo in voos %}
             <div class="voo">
