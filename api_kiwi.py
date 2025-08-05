@@ -3,10 +3,10 @@ import httpx
 
 async def buscar_voos_kiwi(origem, destino, data_partida, data_retorno):
     try:
-        url = "https://kiwi-flight-search.p.rapidapi.com/flights"
+        url = "https://kiwi-com-cheap-flights.p.rapidapi.com/v2/search"
         headers = {
             "X-RapidAPI-Key": os.getenv("RAPIDAPI_KEY_KIWI"),
-            "X-RapidAPI-Host": "kiwi-flight-search.p.rapidapi.com"
+            "X-RapidAPI-Host": "kiwi-com-cheap-flights.p.rapidapi.com"
         }
         params = {
             "fly_from": origem.upper(),
@@ -23,7 +23,7 @@ async def buscar_voos_kiwi(origem, destino, data_partida, data_retorno):
             response = await client.get(url, headers=headers, params=params)
             data = response.json()
 
-        print("[KIWI] JSON:", data)  # 👈 Log para depuração
+        print("[KIWI] JSON:", data)
 
         voos = []
         for v in data.get("data", []):
@@ -39,4 +39,3 @@ async def buscar_voos_kiwi(origem, destino, data_partida, data_retorno):
     except Exception as e:
         print(f"[KIWI] Erro: {e}")
         return []
-
