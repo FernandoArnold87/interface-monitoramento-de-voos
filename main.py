@@ -2,24 +2,24 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from datetime import datetime
 from api_kiwi import buscar_voos_kiwi
 from api_skyscanner import buscar_voos_skyscanner
+from datetime import datetime
 
 app = FastAPI()
 
-# Monta a pasta de arquivos estáticos (imagens, CSS, JS)
+# Pasta para arquivos estáticos (logo, imagens, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Define a pasta de templates HTML
+# Pasta com os arquivos HTML
 templates = Jinja2Templates(directory="templates")
 
-# Página inicial (formulário de busca)
+# Página inicial com o formulário
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-# Endpoint que processa o formulário e exibe resultados
+# Rota que recebe os dados do formulário e busca voos
 @app.post("/precos", response_class=HTMLResponse)
 async def precos(
     request: Request,
@@ -29,24 +29,24 @@ async def precos(
     data_retorno: str = Form(...)
 ):
     try:
-        # Converte data de "dd/mm/yyyy" para "dd/mm/yyyy" (exigido pela Kiwi e Skyscanner via RapidAPI)
-        data_partida_formatada = datetime.strptime(data_partida, "%d/%m/%Y").strftime("%d/%m/%Y")
-        data_retorno_formatada = datetime.strptime(data_retorno, "%d/%m/%Y").strftime("%d/%m/%Y")
+        # Converter data de dd/mm/yyyy para yyyy-mm-dd
+        data_partida_iso = datetime.strptime(data_partida, "%d/%m/%Y").strftime("%Y-%m-%d")
+        data_retorno_iso = datetime.strptime(data_retorno, "%d/%m/%Y").strftime("%Y-%m-%d")
+    except ValueError:
+        return templates.TemplateResponse("resultados.html", {
+            "request": request,
+            "voos": [],
+            "erro": "Formato de data inválido. Use DD/MM/AAAA."
+        })
 
-        # Busca voos em ambas as APIs
-        voos_kiwi = await buscar_voos_kiwi(origem, destino, data_partida_formatada, data_retorno_formatada)
-        voos_skyscanner = await buscar_voos_skyscanner(origem, destino, data_partida_formatada, data_retorno_formatada)
+    # Buscar voos nas APIs
+    voos_kiwi = await buscar_voos_kiwi(origem, destino, data_partida_iso, data_retorno_iso)
+    voos_skyscanner = await buscar_voos_skyscanner(origem, destino, data_partida_iso, data_retorno_iso)
 
-        # Junta os resultados
-        voos = voos_kiwi + voos_skyscanner
+    # Combinar resultados
+    voos = voos_kiwi + voos_skyscanner
 
-        # Debug no console (opcional)
-        print("Voos KIWI:", voos_kiwi)
-        print("Voos SKYSCANNER:", voos_skyscanner)
-
-        # Renderiza o template com os voos encontrados
-        return templates.TemplateResponse("resultados.html", {"request": request, "voos": voos})
-    
-    except Exception as e:
-        print("Erro ao buscar voos:", e)
-        return templates.TemplateResponse("resultados.html", {"request": request, "voos": []})
+    return templates.TemplateResponse("resultados.html", {
+        "request": request,
+        "voos": voos
+    })
