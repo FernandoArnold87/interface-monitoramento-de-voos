@@ -6,55 +6,55 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #e6f0fa, #ffffff);
             text-align: center;
             padding: 40px;
-            background: linear-gradient(to bottom right, #dbeeff, #f4f6f8);
         }
-        .voo {
-            background-color: #ffffffcc;
-            margin: 15px auto;
-            padding: 20px;
-            width: 80%;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 10px;
-            backdrop-filter: blur(3px);
-        }
+
         .logo {
-            max-width: 200px;
+            width: 120px;
             margin-bottom: 20px;
-            animation: rotateLogo 10s linear infinite;
         }
-        @keyframes rotateLogo {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        h2 {
+            color: #005288;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 1px #ccc;
         }
-        .header {
-            background-image: url('/static/aviacao1.jpg');
-            background-size: cover;
-            background-position: center;
-            padding: 60px 0;
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            color: #ffffff;
-            font-size: 36px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-        }
-        a {
-            text-decoration: none;
-            color: #0056b3;
+
+        .erro {
+            color: red;
             font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .voo {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px auto;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .voo a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .voo a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <img class="logo" src="/static/logo.jpg" alt="Logo">
-        <h1>Resultados da Busca de Voos</h1>
-    </div>
+    <img src="/static/logo.jpg" class="logo" alt="Logo">
+    <h2>Resultados da Busca de Voos</h2>
 
     {% if erro %}
-        <p style="color:red"><strong>Erro:</strong> {{ erro }}</p>
+        <div class="erro">Erro: {{ erro }}</div>
     {% endif %}
 
     {% if voos %}
@@ -62,10 +62,10 @@
             <div class="voo">
                 <p><strong>Origem:</strong> {{ voo.origem }}</p>
                 <p><strong>Destino:</strong> {{ voo.destino }}</p>
-                <p><strong>Partida:</strong> {{ voo.data_partida }}</p>
-                <p><strong>Retorno:</strong> {{ voo.data_retorno }}</p>
-                <p><strong>Preço:</strong> {{ voo.preco }}</p>
-                <p><a href="{{ voo.link }}" target="_blank">Ver detalhes</a></p>
+                <p><strong>Data de partida:</strong> {{ voo.data_partida }}</p>
+                <p><strong>Data de retorno:</strong> {{ voo.data_retorno }}</p>
+                <p><strong>Preço:</strong> €{{ voo.preco }}</p>
+                <p><a href="{{ voo.link }}" target="_blank">Ver mais detalhes</a></p>
             </div>
         {% endfor %}
     {% else %}
