@@ -2,75 +2,65 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Monitoramento de Voos - BERLIN & CO.</title>
+    <title>Monitoramento de Voos</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
+            background-color: #eef3f7;
             padding: 40px;
-            background-color: #f4f6f8;
+            text-align: center;
         }
-        img {
-            max-width: 200px;
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        h1 {
+            color: #005288;
             margin-bottom: 20px;
         }
-        form {
-            background-color: #fff;
-            padding: 25px;
-            margin: 0 auto;
-            width: 400px;
-            box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            text-align: left;
-        }
-        input {
+        input, button {
+            padding: 12px;
+            margin: 10px 0;
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 16px;
         }
         button {
-            margin-top: 20px;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: none;
-            background-color: #4CAF50;
+            background-color: #007bff;
             color: white;
-            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #0056b3;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        .banner {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
-
-    <img src="/static/logo.jpg" alt="BERLIN & CO. Logo">
-
-    <h1>Monitoramento de Voos</h1>
-
-    <form action="/precos" method="post">
-        <label for="origem">Origem:</label>
-        <input type="text" id="origem" name="origem" required>
-
-        <label for="destino">Destino:</label>
-        <input type="text" id="destino" name="destino" required>
-
-        <label for="data_ida">Data de Ida:</label>
-        <input type="date" id="data_ida" name="data_ida" required>
-
-        <label for="data_volta">Data de Volta:</label>
-        <input type="date" id="data_volta" name="data_volta" required>
-
-        <button type="submit">Buscar Passagens</button>
-    </form>
-
+    <div class="container">
+        <img src="/static/logo.jpg" class="logo" alt="Logo">
+        <h1>Encontre Voos com os Melhores Preços</h1>
+        <form method="post">
+            <input type="text" name="origem" placeholder="Origem (ex: GRU)" required>
+            <input type="text" name="destino" placeholder="Destino (ex: JFK)" required>
+            <input type="date" name="data_partida" required>
+            <input type="date" name="data_retorno" required>
+            <button type="submit">Buscar Voos</button>
+        </form>
+        <img src="/static/aviacao.jpg" alt="Avião" class="banner">
+    </div>
 </body>
 </html>

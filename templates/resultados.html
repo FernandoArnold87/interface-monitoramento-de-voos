@@ -8,29 +8,51 @@
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 40px;
-            background-color: #f4f6f8;
+            background: linear-gradient(to bottom right, #dbeeff, #f4f6f8);
         }
         .voo {
-            background-color: #fff;
+            background-color: #ffffffcc;
             margin: 15px auto;
             padding: 20px;
             width: 80%;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(3px);
         }
         .logo {
-            max-width: 150px;
+            max-width: 200px;
+            margin-bottom: 20px;
+            animation: rotateLogo 10s linear infinite;
+        }
+        @keyframes rotateLogo {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .header {
+            background-image: url('/static/aviacao1.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 60px 0;
             margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #ffffff;
+            font-size: 36px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
         }
         a {
             text-decoration: none;
-            color: #337ab7;
+            color: #0056b3;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <img class="logo" src="/static/logo.jpg" alt="Logo">
-    <h1>Resultados da Busca de Voos</h1>
+    <div class="header">
+        <img class="logo" src="/static/logo.jpg" alt="Logo">
+        <h1>Resultados da Busca de Voos</h1>
+    </div>
+
     {% if voos %}
         {% for voo in voos %}
             <div class="voo">
