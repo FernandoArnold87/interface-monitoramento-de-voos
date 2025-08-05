@@ -53,13 +53,16 @@
     <div class="container">
         <img src="/static/logo.jpg" class="logo" alt="Logo">
         <h1>Encontre Voos com os Melhores Preços</h1>
-        <form method="post">
+
+        <!-- FORMULÁRIO CORRIGIDO -->
+        <form method="post" action="/precos">
             <input type="text" name="origem" placeholder="Origem (ex: GRU)" required>
             <input type="text" name="destino" placeholder="Destino (ex: JFK)" required>
             <input type="date" name="data_partida" required>
             <input type="date" name="data_retorno" required>
             <button type="submit">Buscar Voos</button>
         </form>
+
         <img src="/static/aviacao.jpg" alt="Avião" class="banner">
     </div>
 </body>
